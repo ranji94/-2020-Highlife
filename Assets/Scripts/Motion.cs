@@ -14,8 +14,8 @@ namespace Com.Itronics.Highlife {
         }
 
         void FixedUpdate() {
-            float tHmove = Input.GetAxis("Horizontal");
-            float tVmove = Input.GetAxis("Vertical");
+            float tHmove = Input.GetAxisRaw("Horizontal");
+            float tVmove = Input.GetAxisRaw("Vertical");
 
             Vector3 tDirection = new Vector3(tHmove, 0, tVmove);
             tDirection.Normalize();
