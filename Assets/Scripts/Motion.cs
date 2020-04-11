@@ -7,16 +7,17 @@ namespace Com.Itronics.Highlife {
     {
         public float speed;
         public float retarder;
+        public float jumpForce;
         public float sprintModifier;
+        public LayerMask ground;
+        public Transform groundDetector;
         private float baseFov;
-        private float fovModifierIterated;
         private float sprintFovModifier = 1.1f;
         public Camera normalCam;
         private Rigidbody rig;
 
         private void Start() {
             baseFov = normalCam.fieldOfView;
-            fovModifierIterated = 1f;
             rig = GetComponent<Rigidbody>();
         }
 
@@ -26,8 +27,9 @@ namespace Com.Itronics.Highlife {
             bool isSprinting = (Input.GetKey(KeyCode.LeftShift) 
                 || Input.GetKey(KeyCode.RightShift)) 
                 && tVmove > 0;
-            bool isJumping = Input.GetKey(KeyCode.Space);
-
+            bool isGrounded = Physics.Raycast(groundDetector.position, Vector3.down, 0.1f, ground);
+            bool isJumping = Input.GetKey(KeyCode.Space) && isGrounded;
+            
             Vector3 tDirection = new Vector3(tHmove, 0, tVmove);
             Vector3 jump = new Vector3(0, 10, 0);
             tDirection.Normalize();
@@ -43,31 +45,28 @@ namespace Com.Itronics.Highlife {
             }
 
             if (isJumping) {
-                rig.velocity = transform.TransformDirection(jump);
+                rig.AddForce(Vector3.up * jumpForce);
             }
+
+            Vector3 tTargetVelocity = transform.TransformDirection(tDirection)
+                    * tAdjustSpeed
+                    * retarder
+                    * Time.deltaTime;
+           
 
             if (isPlayerMoving())
             {
                 if (retarder < 1f) {
                     retarder += 0.2f;
                 }
-                rig.velocity = transform.TransformDirection(tDirection)
-                    * tAdjustSpeed
-                    * retarder
-                    * Time.deltaTime;
+
+                tTargetVelocity.y = rig.velocity.y;
+                rig.velocity = tTargetVelocity;
             }
             else
             {
                 if (retarder > 0.02f) {
                     retarder -= 0.02f;
-                }
-
-                if (retarder < 0.35)
-                {
-                    rig.velocity = transform.TransformDirection(tDirection)
-                    * tAdjustSpeed
-                    * retarder
-                    * Time.deltaTime;
                 }
             }
         }
