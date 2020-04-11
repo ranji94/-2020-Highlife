@@ -27,11 +27,9 @@ namespace Com.Itronics.Highlife {
             bool isSprinting = (Input.GetKey(KeyCode.LeftShift) 
                 || Input.GetKey(KeyCode.RightShift)) 
                 && tVmove > 0;
-            bool isGrounded = Physics.Raycast(groundDetector.position, Vector3.down, 0.1f, ground);
-            bool isJumping = Input.GetKey(KeyCode.Space) && isGrounded;
+            bool isJumping = Input.GetKey(KeyCode.Space) && isGrounded(groundDetector, ground);
             
             Vector3 tDirection = new Vector3(tHmove, 0, tVmove);
-            Vector3 jump = new Vector3(0, 10, 0);
             tDirection.Normalize();
 
             float tAdjustSpeed = speed;
@@ -41,6 +39,7 @@ namespace Com.Itronics.Highlife {
                 normalCam.fieldOfView = baseFov * sprintFovModifier;
             }
             else {
+                rig.AddForce(new Vector3(-tHmove, 0, -tVmove) * 30);
                 normalCam.fieldOfView = baseFov;
             }
 
@@ -48,18 +47,17 @@ namespace Com.Itronics.Highlife {
                 rig.AddForce(Vector3.up * jumpForce);
             }
 
-            Vector3 tTargetVelocity = transform.TransformDirection(tDirection)
-                    * tAdjustSpeed
-                    * retarder
-                    * Time.deltaTime;
-           
-
             if (isPlayerMoving())
             {
                 if (retarder < 1f) {
                     retarder += 0.2f;
                 }
 
+                Vector3 tTargetVelocity = transform.TransformDirection(tDirection)
+                    * tAdjustSpeed
+                    //* retarder
+                    * (isGrounded(groundDetector, ground) ? 1f : 0.7f)
+                    * Time.deltaTime;
                 tTargetVelocity.y = rig.velocity.y;
                 rig.velocity = tTargetVelocity;
             }
@@ -76,6 +74,10 @@ namespace Com.Itronics.Highlife {
             float tVmove = Input.GetAxisRaw("Vertical");
 
             return !(tVmove == 0 && tHmove == 0);
+        }
+
+        private static bool isGrounded(Transform groundDetector, LayerMask ground) {
+            return Physics.Raycast(groundDetector.position, Vector3.down, 0.1f, ground);
         }
     }
 }   
