@@ -56,7 +56,7 @@ namespace Com.Itronics.Highlife {
                 Vector3 tTargetVelocity = transform.TransformDirection(tDirection)
                     * tAdjustSpeed
                     //* retarder
-                    * (isGrounded(groundDetector, ground) ? 1f : 0.7f)
+                    * (isGrounded(groundDetector, ground) ? 1f : 0.6f)
                     * Time.deltaTime;
                 tTargetVelocity.y = rig.velocity.y;
                 rig.velocity = tTargetVelocity;
