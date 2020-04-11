@@ -9,12 +9,14 @@ namespace Com.Itronics.Highlife {
         public float retarder;
         public float sprintModifier;
         private float baseFov;
+        private float fovModifierIterated;
         private float sprintFovModifier = 1.1f;
         public Camera normalCam;
         private Rigidbody rig;
 
         private void Start() {
             baseFov = normalCam.fieldOfView;
+            fovModifierIterated = 1f;
             rig = GetComponent<Rigidbody>();
         }
 
@@ -30,12 +32,14 @@ namespace Com.Itronics.Highlife {
             Vector3 jump = new Vector3(0, 10, 0);
             tDirection.Normalize();
 
-            normalCam.fieldOfView = baseFov * (isSprinting ? sprintFovModifier : 1f);
-
             float tAdjustSpeed = speed;
             if (isSprinting)
             {
                 tAdjustSpeed *= sprintModifier;
+                normalCam.fieldOfView = baseFov * sprintFovModifier;
+            }
+            else {
+                normalCam.fieldOfView = baseFov;
             }
 
             if (isJumping) {
@@ -58,7 +62,7 @@ namespace Com.Itronics.Highlife {
                     retarder -= 0.02f;
                 }
 
-                if (retarder < 0.35f)
+                if (retarder < 0.35)
                 {
                     rig.velocity = transform.TransformDirection(tDirection)
                     * tAdjustSpeed
