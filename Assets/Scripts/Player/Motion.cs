@@ -9,6 +9,10 @@ namespace Com.Itronics.Highlife {
         public float retarder;
         public float jumpForce;
         public float sprintModifier;
+        public float crouchModifier;
+        public float crouchAmount;
+        public GameObject standingCollider;
+        public GameObject crouchingCollider;
         public LayerMask ground;
         public Transform groundDetector;
         private float baseFov;
@@ -24,15 +28,22 @@ namespace Com.Itronics.Highlife {
         void FixedUpdate() {
             float tHmove = Input.GetAxisRaw("Horizontal");
             float tVmove = Input.GetAxisRaw("Vertical");
+
             bool isSprinting = (Input.GetKey(KeyCode.LeftShift) 
                 || Input.GetKey(KeyCode.RightShift)) 
                 && tVmove > 0;
             bool isJumping = Input.GetKey(KeyCode.Space) && isGrounded(groundDetector, ground);
-            
+            bool isCrouching = Input.GetKeyDown(KeyCode.LeftControl) && isGrounded(groundDetector, ground) && !isSprinting;
+
+            if (isCrouching) { 
+                // handle this
+            }
+
             Vector3 tDirection = new Vector3(tHmove, 0, tVmove);
             tDirection.Normalize();
 
             float tAdjustSpeed = speed;
+
             if (isSprinting)
             {
                 tAdjustSpeed *= sprintModifier;

@@ -7,12 +7,13 @@ namespace Com.Itronics.Highlife
     public class Footsteps : MonoBehaviour
     {
         public AudioSource[] footstepSounds;
-        public LayerMask ground;
-        public Transform groundDetector;
+        public CharacterController characterController;
+        public float crouchHeight;
 
         private void Start()
         {
             footstepSounds = GetComponent<AudioSource[]>();
+            characterController = GetComponent<CharacterController>();
             foreach (AudioSource sound in footstepSounds) {
                 sound.Play(0);
             }
@@ -21,14 +22,15 @@ namespace Com.Itronics.Highlife
 
         void Update()
         {
-            bool isGrounded = Physics.Raycast(groundDetector.position, Vector3.down, 0.1f, ground);
             int element = Random.Range(0, footstepSounds.Length);
 
             if (!isAnySoundPlaying(footstepSounds)
                 && isPlayerMoving()
-                && isGrounded)
+                && characterController.isGrounded
+                && !isCrouching())
             {
                 footstepSounds[element].volume = Random.Range(0.8f, 1f);
+                footstepSounds[element].pitch = Random.Range(0.95f, 1f);
                 footstepSounds[element].Play();
             }
         }
@@ -48,6 +50,11 @@ namespace Com.Itronics.Highlife
             float tVmove = Input.GetAxisRaw("Vertical");
 
             return !(tVmove == 0 && tHmove == 0);
+        }
+
+        private bool isCrouching()
+        {
+            return characterController.height == crouchHeight;
         }
     }
 }
