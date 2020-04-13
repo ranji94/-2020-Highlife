@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Com.Itronocs.Highlife { 
+namespace Com.Itronics.Highlife { 
 public class Crowbar : MonoBehaviour
 {
     public Animator anim;
     public AudioSource missSound;
+    public float attackDamage;
+    public float attackRange;
+
     void Start()
     {
             anim = GetComponent<Animator>();
             missSound.Play(0);
-        }
+    }
 
     void Update()
     {
@@ -19,19 +22,19 @@ public class Crowbar : MonoBehaviour
             {
                 Debug.Log("CLICKED MOUSE");
                 anim.SetBool("Fire", true);
-                anim.SetInteger("AnimationNumber", 1);
+                
                 AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(anim.GetLayerIndex("Base Layer"));
                 if (!info.IsName("Fire"))
                 {
+                    anim.SetInteger("AnimationNumber", 1);
                     playCrowbarMissSound();
-                }
+                }  
             }
     }
 
         private void FixedUpdate()
         {
             AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(anim.GetLayerIndex("Base Layer"));
-            Debug.Log(info.IsName("Fire"));
 
             if (info.IsName("Fire"))
             {
