@@ -23,7 +23,7 @@ public class Crate : MonoBehaviour
                     }
                 }
                 Destroy(this.gameObject);
-                
+                Destroy(transform.parent.gameObject);
             }
 
             print("Enemy took damage. Durablility left:");
