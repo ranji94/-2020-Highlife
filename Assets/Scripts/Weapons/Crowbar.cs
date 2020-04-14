@@ -10,6 +10,10 @@ namespace Com.Itronics.Highlife {
         public Camera weaponCam;
         public float attackDamage;
         public float attackRange;
+        public float fireRate;
+        public float impactForce;
+
+        private float nextTimeToFire = 0f;
 
         void Start()
         {
@@ -19,10 +23,12 @@ namespace Com.Itronics.Highlife {
 
         void Update()
         {
-            if (Input.GetMouseButton(0) && !isFiring())
+            if (Input.GetMouseButton(0) 
+                && Time.time >= nextTimeToFire)
             { 
                 Ray ray = weaponCam.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
+                nextTimeToFire = Time.time + 1f / fireRate;
 
                 if (Physics.Raycast(ray, out hit, attackRange))
                 {
@@ -35,6 +41,11 @@ namespace Com.Itronics.Highlife {
                 else {
                     anim.SetBool("Fire", true);
                     playCrowbarMissSound();
+                }
+
+                if (hit.rigidbody != null)
+                {
+                    hit.rigidbody.AddForce(-hit.normal * impactForce);
                 }
             } 
         }
