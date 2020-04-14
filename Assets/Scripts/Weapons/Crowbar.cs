@@ -2,42 +2,68 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Com.Itronocs.Highlife { 
-public class Crowbar : MonoBehaviour
-{
-    public Animator anim;
-    public AudioSource missSound;
-    void Start()
+namespace Com.Itronics.Highlife {
+    public class Crowbar : MonoBehaviour
     {
+        public Animator anim;
+        public AudioSource missSound;
+        public Camera weaponCam;
+        public float attackDamage;
+        public float attackRange;
+
+        void Start()
+        {
             anim = GetComponent<Animator>();
             missSound.Play(0);
         }
 
-    void Update()
-    {
-            if (Input.GetMouseButton(0))
-            {
-                Debug.Log("CLICKED MOUSE");
-                anim.SetBool("Fire", true);
-                anim.SetInteger("AnimationNumber", 1);
-                AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(anim.GetLayerIndex("Base Layer"));
-                if (!info.IsName("Fire"))
+        void Update()
+        {
+            if (Input.GetMouseButton(0) && !isFiring())
+            { 
+                Ray ray = weaponCam.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit, attackRange))
                 {
+                    if (hit.collider.tag == "Crate")
+                    {
+                        Crate crate = hit.collider.GetComponent<Crate>();
+                        StartCoroutine(takeDamage(0.2f, crate));
+                    }  
+                }
+                else {
+                    anim.SetBool("Fire", true);
                     playCrowbarMissSound();
                 }
-            }
-    }
+            } 
+        }
 
         private void FixedUpdate()
         {
-            AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(anim.GetLayerIndex("Base Layer"));
-            Debug.Log(info.IsName("Fire"));
-
-            if (info.IsName("Fire"))
+            if (isFiring())
             {
                 anim.SetBool("Fire", false);
-                anim.SetInteger("AnimationNumber", 0);
+                anim.SetBool("Attack", false);
             }
+        }
+
+        private IEnumerator takeDamage(float time, Crate crate)
+        {
+            yield return new WaitForSeconds(time);
+
+            if(!isFiring()) { 
+                crate.takeDamage(attackDamage);
+                playCrowbarHit(crate.hitSound);
+                anim.SetBool("Attack", true);
+            }
+        }
+
+
+        private bool isFiring()
+        {
+            AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(anim.GetLayerIndex("Base Layer"));
+            return info.IsName("Fire") || info.IsName("Attack");
         }
 
         private void playCrowbarMissSound()
@@ -47,6 +73,12 @@ public class Crowbar : MonoBehaviour
                 missSound.volume = 1f;
                 missSound.Play();
             }
+        }
+
+        private void playCrowbarHit(AudioSource hitSound)
+        {
+            hitSound.volume = 1f;
+            hitSound.Play();
         }
     }
 }
