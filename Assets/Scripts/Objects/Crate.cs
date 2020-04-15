@@ -19,11 +19,12 @@ public class Crate : MonoBehaviour
                 Rigidbody[] allRigidBodies = fracturedGameObj.GetComponentsInChildren<Rigidbody>();
                 if (allRigidBodies.Length > 0) {
                     foreach (var body in allRigidBodies) {
-                        body.AddExplosionForce(3500, transform.position, 1);
+                        body.AddExplosionForce(Random.Range(4000, 11000), transform.position, 1);
                     }
                 }
                 Destroy(this.gameObject);
                 Destroy(transform.parent.gameObject);
+                Destroy(fracturedGameObj, 8f);
             }
 
             print("Enemy took damage. Durablility left:");

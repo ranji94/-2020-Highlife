@@ -55,8 +55,8 @@ namespace Com.Itronics.Highlife {
             muzzleFlash.Play();
             anim.SetBool("Fire", true);
 
-            //if (Physics.Raycast(weaponCam.transform.position, weaponCam.transform.forward, out hit, attackRange)) {
-            if (Physics.Raycast(ray, out hit, attackRange)) { 
+            if (Physics.Raycast(weaponCam.transform.position, weaponCam.transform.forward, out hit, attackRange)) {
+            //if (Physics.Raycast(ray, out hit, attackRange)) { 
                 if (hit.collider.tag == "Crate")
                 {
                     Crate crate = hit.collider.GetComponent<Crate>();
