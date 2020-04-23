@@ -25,6 +25,8 @@ public class PlayerMove : MonoBehaviour
         [SerializeField] public AnimationCurve jumpFallOff;
         [SerializeField] public float jumpMultiplier;
         [SerializeField] public KeyCode jumpKey;
+        public static bool isPlayerCrouching = false;
+        public static bool isPlayerMoving = false;
 
 
         private bool isJumping;
@@ -37,6 +39,8 @@ public class PlayerMove : MonoBehaviour
         private void Update()
         {
             PlayerMovement();
+            isPlayerCrouching = isCrouching();
+            isPlayerMoving = isMoving();
         }
 
         private void PlayerMovement()
@@ -133,17 +137,17 @@ public class PlayerMove : MonoBehaviour
             isJumping = false;
         }
 
-        private static bool isPlayerMoving()
+        private bool isCrouching()
+        {
+            return charController.height == crouchHeight;
+        }
+
+        private static bool isMoving()
         {
             float tHmove = Input.GetAxisRaw("Horizontal");
             float tVmove = Input.GetAxisRaw("Vertical");
 
             return !(tVmove == 0 && tHmove == 0);
-        }
-
-        private bool isCrouching()
-        {
-            return charController.height == crouchHeight;
         }
     }
 }
