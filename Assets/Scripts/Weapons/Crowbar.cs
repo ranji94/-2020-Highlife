@@ -1,17 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-namespace Com.Itronics.Highlife {
+namespace Com.Itronics.Highlife
+{
     public class Crowbar : MonoBehaviour
     {
         public Animator anim;
+        public Text ammoText;
         public AudioSource missSound;
+        public AudioSource defaultHitSound;
         public Camera weaponCam;
         public float attackDamage;
         public float attackRange;
         public float fireRate;
         public float impactForce;
+        public GameObject defaultImpactEffect;
 
         private float nextTimeToFire = 0f;
 
@@ -23,22 +28,24 @@ namespace Com.Itronics.Highlife {
 
         void Update()
         {
-            if (Input.GetMouseButton(0) 
+            if (Input.GetMouseButton(0)
                 && Time.time >= nextTimeToFire)
-            { 
+            {
                 Ray ray = weaponCam.ScreenPointToRay(Input.mousePosition);
+                Vector3 crosshairCorrection = new Vector3(0.05f, -0.55f, 0f);
                 RaycastHit hit;
                 nextTimeToFire = Time.time + 1f / fireRate;
 
-                if (Physics.Raycast(ray, out hit, attackRange))
+                if (Physics.Raycast(weaponCam.transform.position + crosshairCorrection,
+                weaponCam.transform.forward,
+                out hit, attackRange))
                 {
-                    if (hit.collider.tag == "Crate")
-                    {
-                        Crate crate = hit.collider.GetComponent<Crate>();
-                        StartCoroutine(takeDamage(0.2f, crate));
-                    }  
+
+                    hitObject(hit);
+
                 }
-                else {
+                else
+                {
                     anim.SetBool("Fire", true);
                     playCrowbarMissSound();
                 }
@@ -47,7 +54,36 @@ namespace Com.Itronics.Highlife {
                 {
                     hit.rigidbody.AddForce(-hit.normal * impactForce);
                 }
-            } 
+            }
+
+            refreshAmmoText();
+        }
+
+        private void refreshAmmoText()
+        {
+            ammoText.GetComponent<Text>().text = "";
+        }
+
+        private void hitObject(RaycastHit hit)
+        {
+            if (!isFiring())
+            {
+                AudioSource hitSound = defaultHitSound;
+                GameObject impactEffect = defaultImpactEffect;
+
+                Destructible destructible = hit.collider.GetComponent<Destructible>();
+                if (hit.collider.tag == "Destructible")
+                {
+                    destructible.takeDamage(attackDamage);
+                    hitSound = destructible.hitSound;
+                    impactEffect = destructible.bulletImpactEffect;
+                }
+
+                GameObject impactGameObject = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impactGameObject, 2f);
+                playCrowbarHit(hitSound);
+                anim.SetBool("Attack", true);
+            }
         }
 
         private void FixedUpdate()
@@ -58,18 +94,6 @@ namespace Com.Itronics.Highlife {
                 anim.SetBool("Attack", false);
             }
         }
-
-        private IEnumerator takeDamage(float time, Crate crate)
-        {
-            yield return new WaitForSeconds(time);
-
-            if(!isFiring()) { 
-                crate.takeDamage(attackDamage);
-                playCrowbarHit(crate.hitSound);
-                anim.SetBool("Attack", true);
-            }
-        }
-
 
         private bool isFiring()
         {
