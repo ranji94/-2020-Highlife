@@ -7,7 +7,7 @@ namespace Com.Itronics.Highlife
     public class WeaponSwitcher : MonoBehaviour
     {
         [SerializeField] private GameObject[] weapons;
-        [SerializeField] private float SwitchDelay = 0.2f;
+        [SerializeField] private float SwitchDelay = 0.05f;
 
         private int index;
         private bool isSwitching;
