@@ -29,7 +29,7 @@ namespace Com.Itronics.Highlife
                 Destroy(this.gameObject);
                 destructibleDestroySound.volume = 1.0f;
                 destructibleDestroySound.Play();
-                Destroy(transform.parent.gameObject);
+                Destroy(transform.parent.gameObject, 2.0f);
                 Destroy(fracturedGameObj, 8f);
             }
         }
