@@ -23,3 +23,7 @@ is used only in exceptional cases - where will not affect on gameplay negatively
 may be different with his properties
 - Excavation system - some places in maps gives possibility to make a tunnel shortcut using pick/shovel
 - High support for fan made mods
+
+# Setup / Environment
+
+To get started and check if everything is running fine, open your clone of Highlife project in Unity 2019.3.10f1 and play demo scene.
