@@ -7,6 +7,7 @@ namespace Com.Itronics.Highlife
     public class WeaponSwitcher : MonoBehaviour
     {
         [SerializeField] private GameObject[] weapons;
+        [SerializeField] private GameObject grenade;
         [SerializeField] private float SwitchDelay = 0.2f;
 
         private int index;
@@ -27,12 +28,13 @@ namespace Com.Itronics.Highlife
             weapons[0].SetActive(true);
 
             currentWeapon = weapons[0];
-
         }
 
         private void Update()
         {
-            if (Input.GetAxis("Mouse ScrollWheel") > 0 && !isSwitching)
+            if (Input.GetAxis("Mouse ScrollWheel") > 0 
+                && !isSwitching
+                && isAnyWeaponActive())
             {
                 index++;
 
@@ -44,7 +46,9 @@ namespace Com.Itronics.Highlife
 
             }
 
-            if (Input.GetAxis("Mouse ScrollWheel") < 0 && !isSwitching)
+            if (Input.GetAxis("Mouse ScrollWheel") < 0 
+                && !isSwitching
+                && isAnyWeaponActive())
             {
                 index--;
 
@@ -54,7 +58,6 @@ namespace Com.Itronics.Highlife
                 }
                 StartCoroutine(SwitchAfterDelay(index));
             }
-
         }
 
         private IEnumerator SwitchAfterDelay(int newIndex)
@@ -76,6 +79,25 @@ namespace Com.Itronics.Highlife
             weapons[newIndex].SetActive(true);
 
             currentWeapon = weapons[newIndex];
+        }
+
+        public void deactivateCurrentWeapon()
+        {
+            weapons[index].SetActive(false);
+        }
+
+        public void activateLastWeapon()
+        {
+            weapons[index].SetActive(true);
+        }
+
+        private bool isAnyWeaponActive() {
+            for (int i = 0; i < weapons.Length; i++) {
+                if (weapons[i].activeSelf) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
