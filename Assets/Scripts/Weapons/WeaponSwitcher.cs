@@ -6,55 +6,76 @@ namespace Com.Itronics.Highlife
 {
     public class WeaponSwitcher : MonoBehaviour
     {
-        public int selectedWeapon = 0;
+        [SerializeField] private GameObject[] weapons;
+        [SerializeField] private float SwitchDelay = 0.2f;
+
+        private int index;
+        private bool isSwitching;
+        private GameObject currentWeapon;
+
         void Start()
         {
-            SelectWeapon(0.2f);
+            InitializeWeapons();
         }
 
-        void Update()
+        private void InitializeWeapons()
         {
-            int previousSelectedWeapon = selectedWeapon;
+            for (int i = 0; i < weapons.Length; i++)
+            {
+                weapons[i].SetActive(false);
+            }
+            weapons[0].SetActive(true);
 
-            if (Input.GetAxis("Mouse ScrollWheel") > 0f)
-            {
-                if (selectedWeapon >= transform.childCount - 1) selectedWeapon = 0;
-                else selectedWeapon++;
-            }
-            if (Input.GetAxis("Mouse ScrollWheel") < 0f)
-            {
-                if (selectedWeapon <= 0)
-                {
-                    selectedWeapon = transform.childCount - 1;
-                }
-                else
-                {
-                    selectedWeapon--;
-                }
-            }
+            currentWeapon = weapons[0];
 
-            if (previousSelectedWeapon != selectedWeapon)
-            {
-                StartCoroutine(SelectWeapon(0.2f));
-            }
         }
 
-        private IEnumerator SelectWeapon(float time)
+        private void Update()
         {
-            yield return new WaitForSeconds(time);
-            int i = 0;
-            foreach (Transform weapon in transform)
+            if (Input.GetAxis("Mouse ScrollWheel") > 0 && !isSwitching)
             {
-                if (i == selectedWeapon)
+                index++;
+
+                if (index >= weapons.Length)
                 {
-                    weapon.gameObject.SetActive(true);
+                    index = 0;
                 }
-                else
-                {
-                    weapon.gameObject.SetActive(false);
-                }
-                i++;
+                StartCoroutine(SwitchAfterDelay(index));
+
             }
+
+            if (Input.GetAxis("Mouse ScrollWheel") < 0 && !isSwitching)
+            {
+                index--;
+
+                if (index < 0)
+                {
+                    index = weapons.Length - 1;
+                }
+                StartCoroutine(SwitchAfterDelay(index));
+            }
+
+        }
+
+        private IEnumerator SwitchAfterDelay(int newIndex)
+        {
+            isSwitching = true;
+            currentWeapon.GetComponent<Animator>().SetTrigger("HolsterWeapon");
+
+            yield return new WaitForSeconds(SwitchDelay);
+            isSwitching = false;
+            SwitchWeapons(newIndex);
+        }
+
+        private void SwitchWeapons(int newIndex)
+        {
+            for (int i = 0; i < weapons.Length; i++)
+            {
+                weapons[i].SetActive(false);
+            }
+            weapons[newIndex].SetActive(true);
+
+            currentWeapon = weapons[newIndex];
         }
     }
 }
