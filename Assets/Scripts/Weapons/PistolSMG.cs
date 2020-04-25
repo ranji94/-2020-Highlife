@@ -127,7 +127,7 @@ namespace Com.Itronics.Highlife
         {
             RaycastHit hit;
             GameObject impactEffect = defaultImpactEffect;
-            Vector3 crosshairCorrection = new Vector3(0f, -0.1f, 0f);
+            Vector3 crosshairCorrection = new Vector3(0f, -0.03f, 0f);
             Vector3 recoil = new Vector3(Random.Range(-0.02f, 0.02f), Random.Range(-0.02f, 0.02f), 0f);
 
             playFireSound();
