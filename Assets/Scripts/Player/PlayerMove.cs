@@ -76,7 +76,7 @@ public class PlayerMove : MonoBehaviour
 
         private void SetMovementSpeed()
         {
-            if (Input.GetKey(runKey))
+            if (Input.GetKey(runKey) && !isCrouching())
                 movementSpeed = Mathf.Lerp(movementSpeed, 
                     runSpeed, 
                     Time.deltaTime * runBuildUpSpeed);
