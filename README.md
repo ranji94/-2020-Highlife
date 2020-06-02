@@ -19,7 +19,7 @@ is used only in exceptional cases - where will not affect on gameplay negatively
 - Classic FPS gaming mechanics with modern elements like sliding, prone, weapon attaching to objects
 - A lot of insane destructible objects  (destructible bricks in wall, glass, crates etc.)
 - Weapon modifications - laser dots, scopes, grenade launchers, holo etc.
-- Crafting system - using parts found in map player can create weapons from zero. In effect the same weapons
+- Crafting system - using parts found in map player can create weapons from scratch. In effect the same weapons
 may be different with his properties
 - Excavation system - some places in maps gives possibility to make a tunnel shortcut using pick/shovel
 - High support for fan made mods
